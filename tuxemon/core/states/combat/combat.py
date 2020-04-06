@@ -665,7 +665,7 @@ class CombatState(CombatAnimations):
                 self.animate_sprite_tackle(user_sprite)
 
                 if target_sprite:
-                    self.task(partial(self.animate_sprite_take_damage, target_sprite), hit_delay + .2)
+                    self.task(partial(self.animate_sprite_take_damage, target_sprite), hit_delay + 1.0)
                     self.task(partial(self.blink, target_sprite), hit_delay + .6)
 
                 # TODO: track total damage
@@ -775,8 +775,13 @@ class CombatState(CombatAnimations):
                     # If a monster fainted, exp was given, thus the exp bar should be updated
                     # The exp bar must only be animated for the player's monsters
                     # Enemies don't have a bar, doing it for them will cause a crash
-                    for monster in self.monsters_in_play[self.game.player1]:
-                        self.animate_exp(monster)
+                    # we also want this to happen with a slight delay, or the exp bar will
+                    # animate before the monster has even visibly  taken damage
+                    def update_exp(meth, monsters):
+                        for mon in monsters:
+                            meth(mon)
+
+                    self.task(partial(self.animate_exp, self.monsters_in_play[self.game.player1]), 1)
 
     def get_technique_animation(self, technique):
         """ Return a sprite usable as a technique animation
