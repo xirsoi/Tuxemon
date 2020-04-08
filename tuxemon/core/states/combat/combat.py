@@ -781,7 +781,7 @@ class CombatState(CombatAnimations):
                         for mon in monsters:
                             meth(mon)
 
-                    self.task(partial(self.animate_exp, self.monsters_in_play[self.game.player1]), 1)
+                    self.task(partial(self.update_exp, self.animate_exp, self.monsters_in_play[self.game.player1]), 1)
 
     def get_technique_animation(self, technique):
         """ Return a sprite usable as a technique animation
