@@ -784,6 +784,7 @@ class CombatState(CombatAnimations):
 
                     self.task(partial(update_exp, self.animate_exp, self.monsters_in_play[self.game.player1]), 1)
 
+
     def get_technique_animation(self, technique):
         """ Return a sprite usable as a technique animation
 
