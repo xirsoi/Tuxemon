@@ -657,16 +657,15 @@ class CombatState(CombatAnimations):
         # is synchronized with the damage shake motion
         hit_delay = 0
         if user:
-
             # TODO: a real check or some params to test if should tackle, etc
             if result["should_tackle"]:
                 hit_delay += .5
                 user_sprite = self._monster_sprite_map[user]
                 self.animate_sprite_tackle(user_sprite)
 
-                if target_sprite:
-                    self.task(partial(self.animate_sprite_take_damage, target_sprite), hit_delay + 1.0)
+                if target_sprite:  # animate hp just after the blinking animation stops
                     self.task(partial(self.blink, target_sprite), hit_delay + .6)
+                    self.task(partial(self.animate_sprite_take_damage, target_sprite), hit_delay + 1.0)
 
                 # TODO: track total damage
                 # Track damage
@@ -679,7 +678,9 @@ class CombatState(CombatAnimations):
 
                 for status in result.get("statuses", []):
                     m = T.format(status.use_item,
-                                 {"name": technique.name, "user": status.link.name if status.link else "", "target": status.carrier.name})
+                                 {"name": technique.name,
+                                  "user": status.link.name if status.link else "",
+                                  "target": status.carrier.name})
                     message += "\n" + m
 
             else:  # assume this was an item used
@@ -781,7 +782,7 @@ class CombatState(CombatAnimations):
                         for mon in monsters:
                             meth(mon)
 
-                    self.task(partial(self.update_exp, self.animate_exp, self.monsters_in_play[self.game.player1]), 1)
+                    self.task(partial(update_exp, self.animate_exp, self.monsters_in_play[self.game.player1]), 1)
 
     def get_technique_animation(self, technique):
         """ Return a sprite usable as a technique animation
