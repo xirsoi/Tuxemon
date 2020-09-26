@@ -1,7 +1,9 @@
-Tuxemon 0.4.15
+Tuxemon 0.4.25
 ==============
 
 Tuxemon is a free, open source monster-fighting RPG.
+
+[![Build Status](https://travis-ci.org/Tuxemon/Tuxemon.svg?branch=development)](https://travis-ci.org/Tuxemon/Tuxemon)
 
 ![screenshot](https://www.tuxemon.org/images/featurette-01.png)
 
@@ -10,7 +12,7 @@ Requirements
 
 Tuxemon uses a number of open source projects to work properly:
 
-* *python* - version 2.7, 3.5+
+* *python* - version 3.6+
 * *python-pygame* - python game library
 * *python-pytmx* - python library to read Tiled Map Editor's TMX maps.
 * *python-six* - python 2 and 3 compatibility library
@@ -23,6 +25,12 @@ Tuxemon uses a number of open source projects to work properly:
 
 Installation
 ------------
+
+If you want to try the game, its recommended to download and try the master branch
+first. The default development branch is often more up to date, but might have
+breaking bugs. If you want to try the latest version or contribute code changes,
+please use the development branch.
+
 
 **Windows Source**
 
@@ -93,6 +101,14 @@ Tuxemon is available in the [AUR](https://aur.archlinux.org/packages/tuxemon-git
 * [Android](https://www.tuxemon.org/files/builds/tuxemon-unstable-latest.apk) (APK file)
 
 
+**Fedora Linux**
+
+```
+sudo dnf install SDL*-devel freetype-devel libjpeg-devel portmidi-devel
+virtualenv venv
+pip install -r requirements.txt
+```
+
 Controls
 --------
 
@@ -100,6 +116,7 @@ Controls
 * *Arrow Keys* - Movement
 * *Enter* - Select/activate
 * *ESC* - Menu/Cancel
+* *Shift* - Sprint
 
 ##### Map Editor
 
@@ -108,10 +125,7 @@ Use *Tiled* map editor: http://www.mapeditor.org/
 Python 2.7 Notice
 -----------------
 
-We will be supporing bugfixes and features for python 2.7+ after it
-is EOL starting in 2020.  We do plan on removing support for it
-sometime in the future, but there is currently no roadmap to actively
-stop supporting it at this time.
+Python 2.7 is no longer supported.
 
 License
 -------

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Tuxemon
 # Copyright (C) 2014, William Edwards <shadowapex@gmail.com>,
@@ -30,15 +29,11 @@
 #
 #
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import logging
 import pprint
 
-from tuxemon.core import tools, prepare, graphics
+from tuxemon.core import prepare, graphics
 from tuxemon.core.db import db, process_targets
 from tuxemon.core.locale import T
 
@@ -48,7 +43,7 @@ from tuxemon.constants import paths
 logger = logging.getLogger(__name__)
 
 
-class Item(object):
+class Item:
     """An item object is an item that can be used either in or out of combat.
 
     **Example:**
@@ -70,15 +65,15 @@ class Item(object):
     effects = dict()
     conditions = dict()
 
-    def __init__(self, game, user, slug):
-
-        self.game = game
+    def __init__(self, session,  user, slug):
+        self.session = session
         self.user = user
         self.slug = slug
         self.name = "None"
         self.description = "None"
         self.images = []
         self.type = None
+        self.sfx = None
         self.sprite = ""  # The path to the sprite to load.
         self.surface = None  # The pygame.Surface object of the item.
         self.surface_size_original = (0, 0)  # The original size of the image before scaling.
@@ -143,6 +138,7 @@ class Item(object):
 
         # misc attributes (not translated!)
         self.sort = results['sort']
+        assert self.sort
         self.type = results["type"]
         self.sprite = results["sprite"]
         self.usable_in = results["usable_in"]
@@ -173,7 +169,7 @@ class Item(object):
                 error = 'Error: ItemEffect "{}" not implemented'.format(name)
                 logger.error(error)
             else:
-                ret.append(effect(self.game, self.user, params))
+                ret.append(effect(self.session, self.user, params))
 
         return ret
 
@@ -190,15 +186,18 @@ class Item(object):
         ret = list()
 
         for line in raw:
-            name = line.split()[0]
-            params = line.split()[1].split(",")
+            words = line.split()
+            args = "".join(words[1:]).split(",")
+            name = words[0]
+            context = args[0]
+            params = args[1:]
             try:
                 condition = Item.conditions[name]
             except KeyError:
                 error = 'Error: ItemCondition "{}" not implemented'.format(name)
                 logger.error(error)
             else:
-                ret.append(condition(params[0], self.game, self.user, params[1:]))
+                ret.append(condition(context, self.session, self.user, params))
 
         return ret
 
@@ -228,7 +227,7 @@ class Item(object):
             return True
         if not target:
             return False
-        
+
         result = True
 
         for condition in self.conditions:
@@ -276,10 +275,10 @@ class Item(object):
         return meta_result
 
 
-def decode_inventory(game, owner, data):
+def decode_inventory(session, owner, data):
     """ Reconstruct inventory from save_data
 
-    :param game:
+    :param session:
     :param owner:
     :param data: save data
     :type data: Dictionary
@@ -290,7 +289,7 @@ def decode_inventory(game, owner, data):
     out = {}
     for slug, quant in (data.get('inventory') or {}).items():
         item = {
-            'item': Item(game, owner, slug)
+            'item': Item(session, owner, slug)
         }
         if quant is None:
             item["quantity"] = 1
